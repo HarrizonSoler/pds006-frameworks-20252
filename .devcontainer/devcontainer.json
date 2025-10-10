@@ -10,9 +10,12 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "dbaeumer.vscode-eslint",
+                "mubaidr.minimal-mist",
                 "vscodevim.vim"
-            ]
+            ],
+            "settings": {
+                "workbench.colorTheme": "Minimal Mist Light"
+            }
         }
     }
 }

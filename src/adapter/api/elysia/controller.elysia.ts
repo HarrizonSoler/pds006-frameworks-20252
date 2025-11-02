@@ -4,6 +4,7 @@ import { CRITERIA_QUERY_PARAMS_SCHEMA, CriteriaHelper, CriteriaQueryParams } fro
 import { COMPUTER_REQUEST_SCHEMA, ComputerRequest, MED_DEVICE_REQUEST_SCHEMA, MedDeviceRequest } from "@/core/dto";
 import z from "zod";
 import { Computer, EnteredDevice, FrequentComputer, MedicalDevice } from "@/core/domain";
+import { authMiddleware } from "./auth";
 
 export class Controller {
     constructor(
@@ -16,8 +17,10 @@ export class Controller {
         return new Elysia({
             prefix: "/api"
         })
+            .use(authMiddleware)
             .guard({
-                query: CRITERIA_QUERY_PARAMS_SCHEMA
+                query: CRITERIA_QUERY_PARAMS_SCHEMA,
+                auth: true
             })
             .post(
                 "/computers/checkin",

@@ -4,7 +4,7 @@ import Database from "bun:sqlite";
 import Elysia from "elysia";
 
 export const auth = betterAuth({
-  basePath: '/api',
+  basePath: '/auth',
   database: new Database('authdb.sqlite'),
   plugins: [
     openAPI()
@@ -19,7 +19,7 @@ export const auth = betterAuth({
 })
 
 export const authMiddleware = new Elysia()
-  .mount('/auth', auth.handler)
+  .mount(auth.handler)
   .macro({
     auth: {
       async resolve({ status, request: { headers }}) {
@@ -40,7 +40,7 @@ let _schema: ReturnType<typeof auth.api.generateOpenAPISchema>
 const getSchema = async () => (_schema ??= auth.api.generateOpenAPISchema())
 
 export const BETTER_AUTH_OPEN_API_SCHEMA = {
-  getPaths: (prefix = '/auth/api') =>
+  getPaths: (prefix = '/api/auth') =>
     getSchema().then(({ paths }) => {
       const reference: typeof paths = Object.create(null)
 

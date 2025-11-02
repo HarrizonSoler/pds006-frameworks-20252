@@ -1,6 +1,6 @@
 import { openAPI } from "better-auth/plugins";
 import { betterAuth } from "better-auth";
-import Database from "better-sqlite3";
+import Database from "bun:sqlite";
 import Elysia from "elysia";
 
 export const auth = betterAuth({

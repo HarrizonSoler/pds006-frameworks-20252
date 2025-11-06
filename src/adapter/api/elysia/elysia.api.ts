@@ -1,9 +1,12 @@
 import { ComputerService, DeviceService, MedicalDeviceService } from "@/core/service";
-import { auth, authMiddleware, BETTER_AUTH_OPEN_API_SCHEMA } from "./auth";
+import { BETTER_AUTH_OPEN_API_SCHEMA } from "./auth";
 import { Controller } from "./controller.elysia";
 
 import openapi from "@elysiajs/openapi";
 import Elysia from "elysia";
+import { opentelemetry } from "@elysiajs/opentelemetry";
+import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-node";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-proto";
 
 export class ElysiaApiAdapter {
   private controller: Controller
@@ -21,10 +24,26 @@ export class ElysiaApiAdapter {
     )
 
     this.app = new Elysia()
+      .use(opentelemetry({
+        spanProcessors: [
+          new BatchSpanProcessor(
+            new OTLPTraceExporter({
+              url: 'https://api.axiom.co/v1/traces',
+              headers: {
+    						Authorization: `Bearer ${Bun.env.AXIOM_TOKEN}`, 
+    						'X-Axiom-Dataset': `${Bun.env.AXIOM_DATASET}`
+    					}
+            })
+          )
+        ]
+      }))
       .use(this.controller.routes())
   }
 
   async run() {
+    console.log(Bun.env.AXIOM_TOKEN)
+    console.log(Bun.env.AXIOM_DATASET)
+
     this.app
       .use(openapi({
         documentation: {
